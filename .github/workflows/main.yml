@@ -1,0 +1,35 @@
+name: run via
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  export-and-run:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download via
+        shell: bash
+        run: |
+          curl -L -o via.zip "${{ secrets.VIA }}"
+          if [ ! -f "via.zip" ]; then
+            echo "Download failed: via.zip not found."
+            exit 1
+          fi
+
+      - name: Unzip via
+        shell: bash
+        run: |
+          unzip via.zip
+          rm via.zip
+
+      - name: Run via.sh
+        shell: bash
+        run: |
+          chmod +x ./via.sh
+          ./via.sh
